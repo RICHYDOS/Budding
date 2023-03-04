@@ -14,6 +14,11 @@ const cartSchema = new mongoose.Schema({
             type: [Number]
         }
     }),
+    date_created: {
+        type: Date,
+        required: true,
+        default: Date.now
+    }
 });
 
 const Cart = mongoose.model("Cart", cartSchema);
