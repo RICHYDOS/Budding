@@ -20,6 +20,25 @@ router.post('/', async (req, res) => {
     res.send(cart);
 });
 
+router.put('/create_item/:id', auth, async (req, res) => {
+    const cart = await Cart.findById(req.params.id);
+    cart.product.push({
+        id: req.body.productId,
+        size: req.body.size
+    });
+
+});
+
+router.put('/delete_item/:id', auth, async (req, res) => {
+    const cart = await Cart.findById(req.params.id);
+    cart.product.push({
+        id: req.body.productId,
+        size: req.body.size
+    });
+
+});
+
+
 router.put('/add/:id', auth, async (req, res) => {
     const cart = await Cart.findById(req.params.id);
     if (cart.product.filter(function (e) {return e.id == req.body.productId})) {
@@ -30,15 +49,10 @@ router.put('/add/:id', auth, async (req, res) => {
             id: item.id,
             count: count+1,
             size: item.size
-            
+
         };
     }
-    else{
-        cart.product.push({
-            id: req.body.productId,
-            size: req.body.size
-        });
-    }
+    else{}
 
     const updated = await cart.save();
 
@@ -46,8 +60,21 @@ router.put('/add/:id', auth, async (req, res) => {
 });
 
 router.put('/subtract/:id', auth, async (req, res) => {
-    
+    const cart = await Cart.findById(req.params.id);
+    if (cart.product.filter(function (e) {return e.id == req.body.productId})) {
+
+        const item = cart.product.find(item => item.id == req.body.productId);
+        const itemIndex = cart.product.indexOf(item);
+        cart.product[itemIndex] = {
+            id: item.id,
+            count: count-1,
+            size: item.size
+            
+        };
+    }
 });
+
+
 
 
 export default router;
