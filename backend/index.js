@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import products from "./routes/products.js";
-import carts from "./routes/carts";
+import carts from "./routes/carts.js";
 const app = express();
 
 mongoose.set('strictQuery', true);
