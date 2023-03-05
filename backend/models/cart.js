@@ -3,17 +3,15 @@ import productSchema from "./product";
 const cartSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
+        ref: "User"
     },
-    product: new mongoose.Schema({
-        products: {
-            type: [productSchema]
-        },
-        product_count: {
-            type: [Number]
+    product: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Product",
+            count: Number
         }
-    }),
+    ],
     date_created: {
         type: Date,
         required: true,
