@@ -4,6 +4,12 @@ import products from "./routes/products.js";
 import carts from "./routes/carts.js";
 import users from "./routes/users.js";
 const app = express();
+import config from "config";
+
+if (!config.get("jwtPrivateKey")) {
+    console.error("FATAL ERROR: jwtPrivateKey not defined");
+    process.exit(1);
+}
 
 mongoose.set('strictQuery', true);
 mongoose.connect('mongodb://localhost/budding')
