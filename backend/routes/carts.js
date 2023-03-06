@@ -11,18 +11,17 @@ router.get('/:id', async(req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const product = await Product.findById(req.body.productId);
-
     let cart = new Cart({
         user: req.body.userId
     });
     cart = await cart.save();
-    res.send(cart);
+    res.status(200).send(cart);
 });
 
-// router.delete('/:id', async(req, res) => {
-//     const cart = await Cart.fib
-// });
+router.delete('/:id', async(req, res) => {
+    const deletedCart = await Cart.findByIdAndDelete(req.params.id);
+    res.send("Item Deleted");
+});
 
 router.put('/create_item/:id', async (req, res) => {
     const cart = await Cart.findById(req.params.id);
@@ -58,9 +57,8 @@ router.put('/add_item/:id', async (req, res) => {
         const itemIndex = cart.product.indexOf(item);
         cart.product[itemIndex] = {
             id: item.id,
-            count: count+1,
+            count: item.count+1,
             size: item.size
-
         };
     }
     else{}

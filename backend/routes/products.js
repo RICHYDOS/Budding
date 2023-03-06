@@ -18,8 +18,8 @@ router.get('/id:', async(req, res) => {
 router.post('/', async (req, res) => {
     let product = new Product({
         name: req.body.name,
-        description: req.body.short,
         price: req.body.price,
+        description: {short: req.body.short, long: req.body.long},
         product_image: req.body.image,
         tag: req.body.tag
     });

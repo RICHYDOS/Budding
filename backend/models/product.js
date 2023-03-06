@@ -8,14 +8,13 @@ export const productSchema = new mongoose.Schema({
         maxLength: 255
     },
     description: {
-        type: new mongoose.Schema({
-            short: {
-                type: String
-            },
-            long: {
-                type: String
-            },
-        })},
+        short: {
+            type: String
+        },
+        long: {
+            type: String
+        },
+    },
     price: {
         type: Number,
         required: true,
