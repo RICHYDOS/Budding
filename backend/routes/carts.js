@@ -1,16 +1,25 @@
 import mongoose from "mongoose";
 import express from "express";
-import { Cart } from "../models/cart.js";
-import { Product } from "../models/product.js";
+import { Cart, validate } from "../models/cart.js";
+import { User } from "../models/user.js";
+import {Product} from "../models/product.js"
 
 const router = express.Router();
 
 router.get('/:id', async(req, res) => {
     const cart = await Cart.findById(req.params.id);
+    if (!cart) return res.status(400).send("Invalid Cart ID");
+
     res.status(200).send(cart);
 });
 
 router.post('/', async (req, res) => {
+    const result = validate(req.body);
+    if (result.error) return res.status(400).send(result.error.details[0].message);
+
+    let user = await User.findById(req.body.userId);
+    if(!user) return res.status(400).send("User Does Not Exist");
+    
     let cart = new Cart({
         user: req.body.userId
     });
@@ -20,12 +29,21 @@ router.post('/', async (req, res) => {
 
 router.put('/clear_cart/:id', async(req, res) => {
     const cart = await Cart.findById(req.params.id);
+    if (!cart) return res.status(400).send("Invalid Cart ID");
     cart.product = [];
     res.status(200).send("Cart Cleared");
 });
 
 router.put('/create_item/:id', async (req, res) => {
+    const result = validate(req.body);
+    if (result.error) return res.status(400).send(result.error.details[0].message);
+
     const cart = await Cart.findById(req.params.id);
+    if (!cart) return res.status(400).send("Invalid Cart");
+
+    const product = await Product.findById(req.body.productId);
+    if (!product) return res.status(400).send("Invalid Product");
+
     cart.product.push({
         id: req.body.productId,
         size: req.body.size
@@ -36,7 +54,14 @@ router.put('/create_item/:id', async (req, res) => {
 });
 
 router.put('/remove_item/:id', async (req, res) => {
+    const result = validate(req.body);
+    if (result.error) return res.status(400).send(result.error.details[0].message);
+
     const cart = await Cart.findById(req.params.id);
+    if (!cart) return res.status(400).send("Invalid Cart");
+
+    const product = await Product.findById(req.body.productId);
+    if (!product) return res.status(400).send("Invalid Product");
 
     if (cart.product.filter(function (e) {return e.id == req.body.productId})) {
 
@@ -44,7 +69,9 @@ router.put('/remove_item/:id', async (req, res) => {
         const itemIndex = cart.product.indexOf(item);
         cart.product.splice(itemIndex, 1);
     }
-    else{}
+    else{
+        res.status(400).send("That Product is not in this Cart");
+    }
 
     const updated = await cart.save();
     res.send(updated);
@@ -52,9 +79,14 @@ router.put('/remove_item/:id', async (req, res) => {
 
 router.put('/add_item/:id', async (req, res) => {
     const cart = await Cart.findById(req.params.id);
-    if (cart.product.filter(function (e) {return e.id == req.body.productId})) {
+    if (!cart) return res.status(400).send("Invalid Cart");
 
-        const item = cart.product.find(item => item.id == req.body.productId);
+    const product = await Product.findById(req.body.productId);
+    if (!product) return res.status(400).send("Invalid Product");
+
+    const item = cart.product.find(item => item.id == req.body.productId);
+
+    if (item) {
         const itemIndex = cart.product.indexOf(item);
         cart.product[itemIndex] = {
             id: item.id,
@@ -62,25 +94,35 @@ router.put('/add_item/:id', async (req, res) => {
             size: item.size
         };
     }
-    else{}
+    else{
+        return res.status(400).send("That Product is not in this Cart");
+    }
 
     const updated = await cart.save();
 
-    res.send(updated);
+    res.status(200).send(updated);
 });
 
 router.put('/subtract_item/:id', async (req, res) => {
     const cart = await Cart.findById(req.params.id);
-    if (cart.product.filter(function (e) {return e.id == req.body.productId})) {
+    if (!cart) return res.status(400).send("Invalid Cart");
 
-        const item = cart.product.find(item => item.id == req.body.productId);
+    const product = await Product.findById(req.body.productId);
+    if (!product) return res.status(400).send("Invalid Product");
+
+    const item = cart.product.find(item => item.id == req.body.productId);
+    if (item) {
         const itemIndex = cart.product.indexOf(item);
-        cart.product[itemIndex] = {
-            id: item.id,
-            count: count-1,
-            size: item.size
-            
-        };
+        if (!(item.count == 0)) {
+            cart.product[itemIndex] = {
+                id: item.id,
+                count: item.count-1,
+                size: item.size
+            };
+        }
+        else{
+            return res.send("Count cannot be less than 0")
+        }
     }
     const updated = await cart.save();
     res.send(updated);

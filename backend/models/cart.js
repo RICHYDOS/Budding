@@ -19,7 +19,8 @@ export const cartSchema = new mongoose.Schema({
             },
             count: {
                 type: Number,
-                default: 1
+                default: 1,
+                min: 0
             },
             size: {
                 type: String,
@@ -34,7 +35,7 @@ export const Cart = mongoose.model("Cart", cartSchema);
 
 export function validate(cart) {
     const schema = Joi.object({
-        userId: Joi.string().min(3).max(500).required(),
+        userId: Joi.string().min(3).max(500),
         productId: Joi.string().min(3).max(500),
         size: Joi.string()
     })

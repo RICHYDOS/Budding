@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
     res.status(200).send(products);
 });
 
-router.get('/id:', async(req, res) => {
+router.get('/:id', async(req, res) => {
     const product = await Product.findById(req.params.id);
     if(!product) return res.status(400).send("No Product with this Id");
     res.status(200).send(product);
