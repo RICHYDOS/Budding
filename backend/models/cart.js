@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Joi from "joi";
 export const cartSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -30,3 +31,13 @@ export const cartSchema = new mongoose.Schema({
 });
 
 export const Cart = mongoose.model("Cart", cartSchema);
+
+export function validate(cart) {
+    const schema = Joi.object({
+        userId: Joi.string().min(3).max(500).required(),
+        productId: Joi.string().min(3).max(500),
+        size: Joi.string()
+    })
+
+    return schema.validate(cart);
+};

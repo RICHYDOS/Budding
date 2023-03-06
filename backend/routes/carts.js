@@ -18,9 +18,10 @@ router.post('/', async (req, res) => {
     res.status(200).send(cart);
 });
 
-router.delete('/:id', async(req, res) => {
-    const deletedCart = await Cart.findByIdAndDelete(req.params.id);
-    res.send("Item Deleted");
+router.put('/clear_cart/:id', async(req, res) => {
+    const cart = await Cart.findById(req.params.id);
+    cart.product = [];
+    res.status(200).send("Cart Cleared");
 });
 
 router.put('/create_item/:id', async (req, res) => {
