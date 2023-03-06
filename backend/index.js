@@ -3,8 +3,10 @@ import mongoose from "mongoose";
 import products from "./routes/products.js";
 import carts from "./routes/carts.js";
 import users from "./routes/users.js";
-const app = express();
+import login from "./routes/login.js";
 import config from "config";
+
+const app = express();
 
 if (!config.get("jwtPrivateKey")) {
     console.error("FATAL ERROR: jwtPrivateKey not defined");
@@ -20,6 +22,7 @@ app.use(express.json());
 app.use("/api/products", products);
 app.use("/api/carts", carts);
 app.use("/api/users", users);
+app.use("/api/login", login);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on Port ${port}`));
