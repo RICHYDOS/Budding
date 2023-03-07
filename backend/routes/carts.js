@@ -8,7 +8,9 @@ const router = express.Router();
 
 router.get('/:id', async(req, res) => {
     const cart = await Cart.findById(req.params.id);
-    if (!cart) return res.status(400).send("Invalid Cart ID");
+    if (!cart) {
+        return res.status(400).send("Invalid Cart ID");
+    };
 
     res.status(200).send(cart);
 });
@@ -63,7 +65,9 @@ router.put('/remove_item/:id', async (req, res) => {
     const product = await Product.findById(req.body.productId);
     if (!product) return res.status(400).send("Invalid Product");
 
-    if (cart.product.filter(function (e) {return e.id == req.body.productId})) {
+    const item = cart.product.find(item => item.id == req.body.productId);
+
+    if (item) {
 
         const item = cart.product.find(item => item.id == req.body.productId);
         const itemIndex = cart.product.indexOf(item);
