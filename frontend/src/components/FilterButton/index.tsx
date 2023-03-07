@@ -1,20 +1,27 @@
+import { motion } from "framer-motion";
+
 interface FilterButtonProps {
   selected?: boolean;
+  tagName: string;
+  onClick: () => void;
 }
 
-const FilterButton: React.FC<FilterButtonProps> = ({ selected }) => {
+const FilterButton: React.FC<FilterButtonProps> = ({
+  selected,
+  tagName,
+  onClick,
+}) => {
   return (
-    <div
+    <motion.div
+      whileHover={{scale: 1.05}}
+      onClick={onClick}
       style={{
         borderColor: selected ? "#fc6e20" : "#e1e1e1",
-        boxShadow: selected
-          ? "0px 0px 20px 1px rgba(252, 110, 32, 0.2)"
-          : "0px 0px 0px 0px",
       }}
-      className={`cursor-pointer px-[13px] py-[10px] border-2 ] rounded-[8px] bg-white z-10 font-semibold text-[15px] whitespace-nowrap`}
+      className={`cursor-pointer px-[13px] py-[10px] border-2 ] rounded-[8px] bg-white font-semibold text-[15px] whitespace-nowrap transition-[200ms]`}
     >
-      All Products
-    </div>
+      {tagName}
+    </motion.div>
   );
 };
 
