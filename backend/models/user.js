@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
+import config from "config";
 
-const userSchema = new mongoose.Schema({
+export const userSchema = new mongoose.Schema({
     firstname: {
         type: String,
         required: true,
@@ -28,6 +30,9 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-const User = mongoose.model("User", userSchema);
+userSchema.methods.generateAuthToken = function() {
+    const token = jwt.sign({_id: this._id, email: this.email}, config.get('jwtPrivateKey'));
+    return token;
+}
 
-exports.User = User;
+export const User = mongoose.model("User", userSchema);

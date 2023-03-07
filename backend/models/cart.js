@@ -1,18 +1,11 @@
 import mongoose from "mongoose";
-import productSchema from "./product";
+import Joi from "joi";
 export const cartSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
     },
-    // product: [
-    //     {
-    //         type: mongoose.Schema.Types.ObjectId,
-    //         ref: "Product",
-    //         count: Number
-    //     },
-    // ],
     date_created: {
         type: Date,
         required: true,
@@ -26,7 +19,8 @@ export const cartSchema = new mongoose.Schema({
             },
             count: {
                 type: Number,
-                default: 1
+                default: 1,
+                min: 0
             },
             size: {
                 type: String,
@@ -38,3 +32,13 @@ export const cartSchema = new mongoose.Schema({
 });
 
 export const Cart = mongoose.model("Cart", cartSchema);
+
+export function validate(cart) {
+    const schema = Joi.object({
+        userId: Joi.string().min(3).max(500),
+        productId: Joi.string().min(3).max(500),
+        size: Joi.string()
+    })
+
+    return schema.validate(cart);
+};
