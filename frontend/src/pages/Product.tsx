@@ -3,15 +3,17 @@ import BackArrowIcon from "../Images/ProductPage/backArrowIcon.svg";
 import ShoppingCartIcon from "../Images/ProductPage/shopping-bag.svg";
 import AddIcon from "../Images/ProductPage/add.svg";
 import SubtractIcon from "../Images/ProductPage/subtract.png";
+import { useNavigate } from "react-router-dom";
 
 const ProductPage = () => {
+  const navigate = useNavigate();
   return (
     <main className="pb-[30px]">
-      <nav className="px-[20px] mt-[30px] justify-between flex">
-        <figure>
+      <nav className="px-[20px] mt-[20px] justify-between flex">
+        <figure onClick={() => navigate(-1)}>
           <img className="w-[35px]" src={BackArrowIcon} />
         </figure>
-        <figure>
+        <figure onClick={() => navigate("/cart")}>
           <img className="w-[35px]" src={ShoppingCartIcon} />
         </figure>
       </nav>
