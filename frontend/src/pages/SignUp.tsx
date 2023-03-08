@@ -3,6 +3,7 @@ import { useState } from "react";
 import Joi from "joi";
 import EarbudsImage from "../Images/AuthenticationWorkflow/earbuds.webp";
 import { useNavigate } from "react-router-dom";
+import { easeIn, motion } from "framer-motion";
 
 interface ErrorProps {
   firstName: string | undefined;
@@ -42,19 +43,40 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   return (
-    <main className="lg:grid grid-cols-[auto_45%] h-[100vh] overflow-hidden">
-      <figure className="hidden lg:block">
+    <motion.main exit={{opacity: 0}} className="lg:grid grid-cols-[auto_45%] h-[100vh] overflow-hidden">
+      <motion.figure
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, transition: { duration: 0.4, ease: easeIn } }}
+        className="hidden lg:block"
+      >
         <img className="w-full h-full object-cover" src={EarbudsImage} />
-      </figure>
+      </motion.figure>
       <section className="lg:px-[30px]">
-        <p className="font-bold text-[#fc6e20] text-[28px] pl-[20px] mt-[20px]">
+        <motion.p initial={{ opacity: 0 }}
+            animate={{
+              opacity: 1,
+              transition: { duration: 0.5, ease: easeIn, delay: 0.4 },
+            }} className="font-bold text-[#fc6e20] text-[28px] pl-[20px] mt-[20px]">
           Budding.
-        </p>
+        </motion.p>
         <section className="h-[calc(100vh-80px)] flex flex-col justify-center">
-          <header className="text-[24px] text-center font-medium mb-[30px]">
+          <motion.header initial={{ opacity: 0, scale: 0.95, y: 30 }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              transition: { duration: 0.5, ease: easeIn, delay: 0.4 },
+            }} className="text-[24px] text-center font-medium mb-[30px]">
             Create an Account
-          </header>
-          <form
+          </motion.header>
+          <motion.form
+            initial={{ opacity: 0, scale: 0.95, y: 30 }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              transition: { duration: 0.5, ease: easeIn, delay: 0.4 },
+            }}
             onSubmit={(e) => {
               e.preventDefault();
             }}
@@ -150,10 +172,10 @@ const SignUp = () => {
                 Sign In
               </span>
             </p>
-          </form>
+          </motion.form>
         </section>
       </section>
-    </main>
+    </motion.main>
   );
 };
 
