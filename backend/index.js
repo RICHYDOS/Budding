@@ -13,8 +13,10 @@ if (!config.get("jwtPrivateKey")) {
     process.exit(1);
 }
 
+let uri = "mongodb+srv://RICHYDOS:recharge123%40@budding.jimuyr5.mongodb.net/?retryWrites=true&w=majority";
+let uri_before = 'mongodb://localhost/budding';
 mongoose.set('strictQuery', true);
-mongoose.connect('mongodb://localhost/budding')
+mongoose.connect(uri)
     .then(() => console.log("Connected to MongoDb..."))
     .catch(err => console.error("Could not connect to MongoDb", err));
 
