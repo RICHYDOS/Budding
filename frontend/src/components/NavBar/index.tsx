@@ -42,8 +42,8 @@ const NavButton = () => {
                 className="w-full max-w-[300px] h-[300px] rounded-[50px] bg-white flex items-center justify-center flex-col text-[24px] font-medium gap-[15px] cursor-default"
               >
                 <p className="cursor-pointer">SIGN OUT</p>
-                <p className="cursor-pointer">VIEW CART</p>
-                <p className="cursor-pointer">CONTACT US</p>
+                <p onClick={() => navigate("/cart")} className="cursor-pointer">VIEW CART</p>
+                <p className="cursor-pointer">VIEW REPO</p>
               </motion.div>
             </div>
           </>
