@@ -26,12 +26,10 @@ router.post('/', async (req, res) => {
     await cart.save();
 
     const output = {
-        "user": {
-            "_id": user._id,
-            "firstname": user.firstname,
-            "email": user.email,
-            "cart": cart._id
-        }
+        "_id": user._id,
+        "firstname": user.firstname,
+        "email": user.email,
+        "cart": cart._id
     }
 
     res.header('x-auth-token', token).status(200).send(output);
