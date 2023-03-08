@@ -6,12 +6,12 @@ import {auth} from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.get('/:id', auth, async(req, res) => {
+router.get('/:id', async(req, res) => {
     const order = await Order.findById(req.params.id);
     res.status(200).send(order);
 });
 
-router.post('/', auth, async (req, res) => {
+router.post('/', async (req, res) => {
     let order = new Order({
         user: req.body.userId,
         date_delivered: req.body.date_delivered,

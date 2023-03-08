@@ -5,13 +5,13 @@ import {auth} from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.get('/', auth, async (req, res) => {
+router.get('/', async (req, res) => {
     const products = await Product.find().sort({name:1});
     if(!products) return res.status(400).send("No Products available");
     res.status(200).send(products);
 });
 
-router.get('/:id', auth, async(req, res) => {
+router.get('/:id', async(req, res) => {
     const product = await Product.findById(req.params.id);
     if(!product) return res.status(400).send("No Product with this Id");
     res.status(200).send(product);

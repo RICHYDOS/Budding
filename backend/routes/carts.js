@@ -7,7 +7,7 @@ import {auth} from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.get('/:id', auth, async(req, res) => {
+router.get('/:id', async(req, res) => {
     const cart = await Cart.findById(req.params.id);
     if (!cart) {
         return res.status(400).send("Invalid Cart ID");
@@ -15,7 +15,7 @@ router.get('/:id', auth, async(req, res) => {
     res.status(200).send(cart);
 });
 
-router.post('/', auth, async (req, res) => {
+router.post('/', async (req, res) => {
     const result = validate(req.body);
     if (result.error) return res.status(400).send(result.error.details[0].message);
 
@@ -29,14 +29,14 @@ router.post('/', auth, async (req, res) => {
     res.status(200).send(cart);
 });
 
-router.put('/clear_cart/:id', auth, async(req, res) => {
+router.put('/clear_cart/:id', async(req, res) => {
     const cart = await Cart.findById(req.params.id);
     if (!cart) return res.status(400).send("Invalid Cart ID");
     cart.product = [];
     res.status(200).send("Cart Cleared");
 });
 
-router.put('/create_item/:id', auth, async (req, res) => {
+router.put('/create_item/:id', async (req, res) => {
     const result = validate(req.body);
     if (result.error) return res.status(400).send(result.error.details[0].message);
 
@@ -55,7 +55,7 @@ router.put('/create_item/:id', auth, async (req, res) => {
     res.send(updated);
 });
 
-router.put('/remove_item/:id', auth, async (req, res) => {
+router.put('/remove_item/:id', async (req, res) => {
     const result = validate(req.body);
     if (result.error) return res.status(400).send(result.error.details[0].message);
 
@@ -81,7 +81,7 @@ router.put('/remove_item/:id', auth, async (req, res) => {
     res.send(updated);
 });
 
-router.put('/add_item/:id', auth, async (req, res) => {
+router.put('/add_item/:id', async (req, res) => {
     const cart = await Cart.findById(req.params.id);
     if (!cart) return res.status(400).send("Invalid Cart");
 
@@ -107,7 +107,7 @@ router.put('/add_item/:id', auth, async (req, res) => {
     res.status(200).send(updated);
 });
 
-router.put('/subtract_item/:id', auth, async (req, res) => {
+router.put('/subtract_item/:id', async (req, res) => {
     const cart = await Cart.findById(req.params.id);
     if (!cart) return res.status(400).send("Invalid Cart");
 
