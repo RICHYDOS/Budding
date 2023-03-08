@@ -29,9 +29,9 @@ router.post('/', async (req, res) => {
         "user": {
             "_id": user._id,
             "firstname": user.firstname,
-            "email": user.email
-        },
-        "cart": cart._id
+            "email": user.email,
+            "cart": cart._id
+        }
     }
 
     res.header('x-auth-token', token).status(200).send(output);
