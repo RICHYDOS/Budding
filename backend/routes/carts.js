@@ -8,7 +8,12 @@ import {auth} from "../middleware/auth.js";
 const router = express.Router();
 
 router.get('/:id', async(req, res) => {
-    const cart = await Cart.findById(req.params.id);
+    const cart = await Cart.findById(req.params.id).populate({path: 'products',
+    populate: {
+        path: 'product',
+        model: 'Product',
+    }});
+
     if (!cart) {
         return res.status(400).send("Invalid Cart ID");
     };
@@ -32,7 +37,8 @@ router.post('/', async (req, res) => {
 router.put('/clear_cart/:id', async(req, res) => {
     const cart = await Cart.findById(req.params.id);
     if (!cart) return res.status(400).send("Invalid Cart ID");
-    cart.product = [];
+    cart.products = [];
+    await cart.save();
     res.status(200).send("Cart Cleared");
 });
 
@@ -46,8 +52,8 @@ router.put('/create_item/:id', async (req, res) => {
     const product = await Product.findById(req.body.productId);
     if (!product) return res.status(400).send("Invalid Product");
 
-    cart.product.push({
-        id: req.body.productId,
+    cart.products.push({
+        product: req.body.productId,
         size: req.body.size
     });
 
@@ -69,9 +75,9 @@ router.put('/remove_item/:id', async (req, res) => {
 
     if (item) {
 
-        const item = cart.product.find(item => item.id == req.body.productId);
-        const itemIndex = cart.product.indexOf(item);
-        cart.product.splice(itemIndex, 1);
+        const item = cart.products.find(item => item.id == req.body.productId);
+        const itemIndex = cart.products.indexOf(item);
+        cart.products.splice(itemIndex, 1);
     }
     else{
         res.status(400).send("That Product is not in this Cart");
@@ -88,11 +94,11 @@ router.put('/add_item/:id', async (req, res) => {
     const product = await Product.findById(req.body.productId);
     if (!product) return res.status(400).send("Invalid Product");
 
-    const item = cart.product.find(item => item.id == req.body.productId);
+    const item = cart.products.find(item => item.id == req.body.productId);
 
     if (item) {
         const itemIndex = cart.product.indexOf(item);
-        cart.product[itemIndex] = {
+        cart.products[itemIndex] = {
             id: item.id,
             count: item.count+1,
             size: item.size
@@ -114,11 +120,11 @@ router.put('/subtract_item/:id', async (req, res) => {
     const product = await Product.findById(req.body.productId);
     if (!product) return res.status(400).send("Invalid Product");
 
-    const item = cart.product.find(item => item.id == req.body.productId);
+    const item = cart.products.find(item => item.id == req.body.productId);
     if (item) {
         const itemIndex = cart.product.indexOf(item);
         if (!(item.count == 0)) {
-            cart.product[itemIndex] = {
+            cart.products[itemIndex] = {
                 id: item.id,
                 count: item.count-1,
                 size: item.size
