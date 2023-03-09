@@ -2,8 +2,12 @@ import TextField from "@mui/material/TextField";
 import { useState } from "react";
 import Joi from "joi";
 import EarbudsImage from "../Images/AuthenticationWorkflow/earbuds.webp";
-import { useNavigate } from "react-router-dom";
+import { Router, useNavigate } from "react-router-dom";
 import { easeIn, motion } from "framer-motion";
+import server from "../Utils/AxiosInstance";
+import jwtDecode from "jwt-decode";
+import { useContext } from "react";
+import { UserContext } from "../Context/UserContext";
 
 interface ErrorProps {
   email: string | undefined;
@@ -13,10 +17,32 @@ interface ErrorProps {
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [backendError, setBackendError] = useState("");
   const [errors, setErrors] = useState<ErrorProps>({
     email: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
+  const { setUser } = useContext(UserContext);
+  const onLogin = async () => {
+    if (!errors.email && !errors.password) {
+      try {
+        setLoading(true);
+        setBackendError("");
+        const payload = { email, password };
+        const { data: token } = await server.post("/login", payload);
+        const user = jwtDecode(token);
+        setUser(user);
+        // console.log(user);
+        navigate("/products");
+      } catch (err: any) {
+        console.log(err);
+        if (err.response.status == 400) setBackendError(err.response.data);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
   const validateTextField = (value: string, label: string) => {
     const schema = Joi.object({
       value: Joi.string().min(3).max(20).required().label(label),
@@ -37,7 +63,10 @@ const Login = () => {
   const navigate = useNavigate();
 
   return (
-    <motion.main exit={{opacity: 0}} className="lg:grid grid-cols-[auto_45%] h-[100vh] overflow-hidden">
+    <motion.main
+      exit={{ opacity: 0 }}
+      className="lg:grid grid-cols-[auto_45%] h-[100vh] overflow-hidden"
+    >
       <motion.figure
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, transition: { duration: 0.4, ease: easeIn } }}
@@ -46,21 +75,32 @@ const Login = () => {
         <img className="w-full h-full object-cover" src={EarbudsImage} />
       </motion.figure>
       <section className="lg:px-[30px]">
-        <motion.p initial={{ opacity: 0 }} animate={{
-              opacity: 1,
-              transition: { duration: 0.5, ease: easeIn, delay: 0.4 },
-            }} className="font-bold text-[#fc6e20] text-[28px] pl-[20px] mt-[20px] ">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{
+            opacity: 1,
+            transition: { duration: 0.5, ease: easeIn, delay: 0.4 },
+          }}
+          className="font-bold text-[#fc6e20] text-[28px] pl-[20px] mt-[20px] "
+        >
           Budding.
         </motion.p>
         <section className="h-[calc(100vh-80px)] flex flex-col justify-center ">
-          <motion.header initial={{ opacity: 0, scale: 0.95, y: 30 }} animate={{
+          <motion.header
+            initial={{ opacity: 0, scale: 0.95, y: 30 }}
+            animate={{
               opacity: 1,
               scale: 1,
               y: 0,
               transition: { duration: 0.5, ease: easeIn, delay: 0.4 },
-            }} className="text-[24px] text-center font-medium mb-[30px]">
+            }}
+            className="text-[24px] text-center font-medium mb-[30px]"
+          >
             Log In to Your Account
           </motion.header>
+          {backendError && (
+            <p className="text-center text-[red] mb-[10px]">{backendError}</p>
+          )}
           <motion.form
             initial={{ opacity: 0, scale: 0.95, y: 30 }}
             animate={{
@@ -113,8 +153,11 @@ const Login = () => {
                 />
                 <p className="text-[14px] text-[red]">{errors.password}</p>
               </div>
-              <button className="h-[50px] w-full bg-[#fc6e20] rounded-[10px] text-[20px] font-semibold text-white">
-                Log In
+              <button
+                onClick={onLogin}
+                className="h-[50px] w-full bg-[#fc6e20] rounded-[10px] text-[20px] font-semibold text-white"
+              >
+                {loading ? "Loading..." : "Log In"}
               </button>
             </div>
             <p className="px-[20px] mt-[10px]">
