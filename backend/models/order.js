@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Joi from "joi";
 export const orderSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -42,3 +43,16 @@ export const orderSchema = new mongoose.Schema({
 });
 
 export const Order = mongoose.model("Order", orderSchema);
+
+export function validate(order) {
+    const schema = Joi.object({
+        userId: Joi.string().min(3).max(500),
+        date_delivered: Joi.date(),
+        status: Joi.string(),
+        product: Joi.array(),
+        email: Joi.string().min(3).max(255).email().required(),
+        password: Joi.string().min(8).max(255).required()
+    })
+
+    return schema.validate(order);
+};

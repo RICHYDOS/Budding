@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import express from "express";
 import { Product, validate } from "../models/product.js";
+import {auth} from "../middleware/auth.js";
 
 const router = express.Router();
 

@@ -11,9 +11,9 @@ export const cartSchema = new mongoose.Schema({
         required: true,
         default: Date.now
     },
-    product: {
+    products: {
         type: [new mongoose.Schema({
-            id: {
+            product: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Product"
             },
