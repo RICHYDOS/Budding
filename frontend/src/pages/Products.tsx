@@ -5,10 +5,16 @@ import Product from "../components/Product";
 import SearchInput from "../components/SearchInput";
 import SortButton from "../components/SortButton";
 import ShoppingCartIcon from "../Images/ProductPage/shopping-bag.svg";
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import server from "../Utils/AxiosInstance";
+import { useQuery } from "react-query";
+import { ProductContext } from "../Context/ProductContext";
+import { useContext } from "react";
+import { UserContext } from "../Context/UserContext";
+import CartIcon from "../components/CartIcon";
 
-interface ProductType {
+export interface ProductType {
   _id: string;
   name: string;
   description: {
@@ -17,115 +23,30 @@ interface ProductType {
   };
   price: number;
   tag: string;
-  image: string;
+  product_image: string;
 }
 
 const ProductsPage = () => {
   const navigate = useNavigate();
-  const tags = ["All Products", "Cute", "Protective", "Regular"];
+  const tags = [
+    "All Products",
+    "trendy",
+    "minimalist",
+    "designer",
+    "protective",
+  ];
+  const { productDataIsLoading, productData } = useContext(ProductContext);
   const [selectedTag, setSelectedTag] = useState("All Products");
   const [searchFilter, setSearchFilter] = useState("");
   const [nextImageId, setNextImageId] = useState("");
-  const [products, setProducts] = useState<ProductType[]>([
-    {
-      _id: "1",
-      name: "Yellow Yummy",
-      description: {
-        short: "Cute protective yellow bear",
-        long: "This is a stylish everyday case with that looks like a pineapple but also a person, you can call it the Yellow Yummy. Made with protective rubber, the Yellow Yummy is sure to keep your airpods safe from any fall.",
-      },
-      price: 6.79,
-      tag: "Cute",
-      image:
-        "https://litb-cgis.rightinthebox.com/images/384x384/202209/bps/product/inc/qyzneu1662460508307.jpg?fmt=webp&v=1",
-    },
-    {
-      _id: "2",
-      name: "Yellow Yummy",
-      description: {
-        short: "Cute protective yellow bear",
-        long: "This is a stylish everyday case with that looks like a pineapple but also a person, you can call it the Yellow Yummy. Made with protective rubber, the Yellow Yummy is sure to keep your airpods safe from any fall.",
-      },
-      price: 6.79,
-      tag: "Cute",
-      image:
-        "https://litb-cgis.rightinthebox.com/images/384x384/202209/bps/product/inc/qyzneu1662460508307.jpg?fmt=webp&v=1",
-    },
-    {
-      _id: "3",
-      name: "Yellow Yummy",
-      description: {
-        short: "Cute protective yellow bear",
-        long: "This is a stylish everyday case with that looks like a pineapple but also a person, you can call it the Yellow Yummy. Made with protective rubber, the Yellow Yummy is sure to keep your airpods safe from any fall.",
-      },
-      price: 6.79,
-      tag: "Cute",
-      image:
-        "https://litb-cgis.rightinthebox.com/images/384x384/202209/bps/product/inc/qyzneu1662460508307.jpg?fmt=webp&v=1",
-    },
-    {
-      _id: "4",
-      name: "Yellow Yummy",
-      description: {
-        short: "Cute protective yellow bear",
-        long: "This is a stylish everyday case with that looks like a pineapple but also a person, you can call it the Yellow Yummy. Made with protective rubber, the Yellow Yummy is sure to keep your airpods safe from any fall.",
-      },
-      price: 6.79,
-      tag: "Protective",
-      image:
-        "https://litb-cgis.rightinthebox.com/images/384x384/202209/bps/product/inc/qyzneu1662460508307.jpg?fmt=webp&v=1",
-    },
-    {
-      _id: "5",
-      name: "Yellow Yummy",
-      description: {
-        short: "Cute protective yellow bear",
-        long: "This is a stylish everyday case with that looks like a pineapple but also a person, you can call it the Yellow Yummy. Made with protective rubber, the Yellow Yummy is sure to keep your airpods safe from any fall.",
-      },
-      price: 6.79,
-      tag: "Cute",
-      image:
-        "https://litb-cgis.rightinthebox.com/images/384x384/202209/bps/product/inc/qyzneu1662460508307.jpg?fmt=webp&v=1",
-    },
-    {
-      _id: "6",
-      name: "Yellow Yummy",
-      description: {
-        short: "Cute protective yellow bear",
-        long: "This is a stylish everyday case with that looks like a pineapple but also a person, you can call it the Yellow Yummy. Made with protective rubber, the Yellow Yummy is sure to keep your airpods safe from any fall.",
-      },
-      price: 6.79,
-      tag: "Cute",
-      image:
-        "https://litb-cgis.rightinthebox.com/images/384x384/202209/bps/product/inc/qyzneu1662460508307.jpg?fmt=webp&v=1",
-    },
-    {
-      _id: "7",
-      name: "Yellow Yummy",
-      description: {
-        short: "Cute protective yellow bear",
-        long: "This is a stylish everyday case with that looks like a pineapple but also a person, you can call it the Yellow Yummy. Made with protective rubber, the Yellow Yummy is sure to keep your airpods safe from any fall.",
-      },
-      price: 6.79,
-      tag: "Cute",
-      image:
-        "https://litb-cgis.rightinthebox.com/images/384x384/202209/bps/product/inc/qyzneu1662460508307.jpg?fmt=webp&v=1",
-    },
-    {
-      _id: "8",
-      name: "Yellow Yummy",
-      description: {
-        short: "Cute protective yellow bear",
-        long: "This is a stylish everyday case with that looks like a pineapple but also a person, you can call it the Yellow Yummy. Made with protective rubber, the Yellow Yummy is sure to keep your airpods safe from any fall.",
-      },
-      price: 6.79,
-      tag: "Cute",
-      image:
-        "https://litb-cgis.rightinthebox.com/images/384x384/202209/bps/product/inc/qyzneu1662460508307.jpg?fmt=webp&v=1",
-    },
-  ]);
+  const { user, setUser } = useContext(UserContext);
+
   useEffect(() => {
     window.scrollTo(0, 0);
+  });
+
+  useEffect(() => {
+    if (!user) navigate("/login");
   });
   return (
     <main className="overflow-hidden lg:overflow-visible pb-[30px] lg:max-w-[1360px] mx-auto">
@@ -134,7 +55,11 @@ const ProductsPage = () => {
           <motion.img
             layoutId={nextImageId}
             className="w-full  max-w-[350px] lg:max-w-[450px] mt-[35px] lg:mt-[135px] mx-auto lg:mx-0 lg:left-[180px] h-[300px] object-cover z-10"
-            src={products.find((item) => item._id == nextImageId)?.image}
+            src={
+              productData?.data.find(
+                (item: ProductType) => item._id == nextImageId
+              )?.product_image
+            }
           />
         </figure>
       )}
@@ -144,10 +69,8 @@ const ProductsPage = () => {
         className="px-[20px] pb-[10px] pt-[20px] flex justify-between items-center text-[18px] font-medium lg:fixed lg:left-0 lg:right-0 lg:top-0 mx-w-[1360px] bg-white"
       >
         <NavButton />
-        <p>Hi, Ronald</p>
-        <figure onClick={() => navigate("/cart")}>
-          <img className="cursor-pointer w-[35px]" src={ShoppingCartIcon} />
-        </figure>
+        <p>Hi, {user.firstname}</p>
+        <CartIcon />
       </motion.nav>
       <motion.header
         initial={{ opacity: 0 }}
@@ -178,8 +101,9 @@ const ProductsPage = () => {
       >
         {/* For Filtering by the tags */}
         <div className="flex gap-x-[15px] pr-[20px]">
-          {tags.map((tagName) => (
+          {tags.map((tagName, index) => (
             <FilterButton
+              key={index}
               tagName={tagName}
               selected={tagName == selectedTag}
               onClick={() => setSelectedTag(tagName)}
@@ -187,29 +111,38 @@ const ProductsPage = () => {
           ))}
         </div>
       </motion.section>
-      <section className="px-[20px] grid grid-cols-2 lg:grid-cols-4 gap-[20px] lg:gap-[40px]">
-        {/* For the actual products */}
-        {products
-          .filter((product) =>
-            selectedTag == "All Products" ? true : product.tag == selectedTag
-          )
-          .filter((product) =>
-            product.name.toLowerCase().includes(searchFilter)
-          )
-          .map((product, index) => (
-            <Product
-              key={index}
-              index={index}
-              image={product.image}
-              name={product.name}
-              shortDescription={product.description.short}
-              price={product.price}
-              _id={product._id}
-              nextImageId={nextImageId}
-              onClick={() => setNextImageId(product._id)}
-            />
-          ))}
-      </section>
+      {!productDataIsLoading && (
+        <section className="px-[20px] grid grid-cols-2 lg:grid-cols-4 gap-[20px] lg:gap-[40px]">
+          {/* For the actual products */}
+          {productData?.data
+            .filter((product: ProductType) =>
+              selectedTag == "All Products"
+                ? true
+                : product.tag.includes(selectedTag)
+            )
+            .filter((product: ProductType) =>
+              product.name.toLowerCase().includes(searchFilter)
+            )
+            .map((product: ProductType, index: number) => (
+              <Product
+                key={index}
+                index={index}
+                image={product.product_image}
+                name={product.name}
+                shortDescription={product.description.short}
+                price={product.price}
+                _id={product._id}
+                nextImageId={nextImageId}
+                onClick={() => setNextImageId(product._id)}
+              />
+            ))}
+        </section>
+      )}
+      {productDataIsLoading && (
+        <section className="w-full h-[400px] flex items-center justify-center">
+          Loading...
+        </section>
+      )}
     </main>
   );
 };

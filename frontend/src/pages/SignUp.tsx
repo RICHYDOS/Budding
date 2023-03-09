@@ -1,9 +1,12 @@
 import TextField from "@mui/material/TextField";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Joi from "joi";
 import EarbudsImage from "../Images/AuthenticationWorkflow/earbuds.webp";
 import { useNavigate } from "react-router-dom";
 import { easeIn, motion } from "framer-motion";
+import server from "../Utils/AxiosInstance";
+import jwtDecode from "jwt-decode";
+import { UserContext } from "../Context/UserContext";
 
 interface ErrorProps {
   firstName: string | undefined;
@@ -17,6 +20,9 @@ const SignUp = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [backendError, setBackendError] = useState("");
+  const { setUser } = useContext(UserContext);
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<ErrorProps>({
     firstName: "",
     lastName: "",
@@ -42,8 +48,35 @@ const SignUp = () => {
   };
   const navigate = useNavigate();
 
+  const onSignUp = async () => {
+    setLoading(true);
+    if (!errors.email && !errors.password) {
+      try {
+        setBackendError("");
+        const payload = {
+          firstname: firstName,
+          lastname: lastName,
+          email,
+          password,
+        };
+        const { data: user } = await server.post("/users", payload);
+        console.log(user);
+        setUser(user);
+        navigate("/products");
+      } catch (err: any) {
+        console.log(err);
+        if (err.response.status == 400) setBackendError(err.response.data);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   return (
-    <motion.main exit={{opacity: 0}} className="lg:grid grid-cols-[auto_45%] h-[100vh] overflow-hidden">
+    <motion.main
+      exit={{ opacity: 0 }}
+      className="lg:grid grid-cols-[auto_45%] h-[100vh] overflow-hidden"
+    >
       <motion.figure
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, transition: { duration: 0.4, ease: easeIn } }}
@@ -52,23 +85,32 @@ const SignUp = () => {
         <img className="w-full h-full object-cover" src={EarbudsImage} />
       </motion.figure>
       <section className="lg:px-[30px]">
-        <motion.p initial={{ opacity: 0 }}
-            animate={{
-              opacity: 1,
-              transition: { duration: 0.5, ease: easeIn, delay: 0.4 },
-            }} className="font-bold text-[#fc6e20] text-[28px] pl-[20px] mt-[20px]">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{
+            opacity: 1,
+            transition: { duration: 0.5, ease: easeIn, delay: 0.4 },
+          }}
+          className="font-bold text-[#fc6e20] text-[28px] pl-[20px] mt-[20px]"
+        >
           Budding.
         </motion.p>
         <section className="h-[calc(100vh-80px)] flex flex-col justify-center">
-          <motion.header initial={{ opacity: 0, scale: 0.95, y: 30 }}
+          <motion.header
+            initial={{ opacity: 0, scale: 0.95, y: 30 }}
             animate={{
               opacity: 1,
               scale: 1,
               y: 0,
               transition: { duration: 0.5, ease: easeIn, delay: 0.4 },
-            }} className="text-[24px] text-center font-medium mb-[30px]">
+            }}
+            className="text-[24px] text-center font-medium mb-[30px]"
+          >
             Create an Account
           </motion.header>
+          {backendError && (
+            <p className="text-center text-[red] mb-[10px]">{backendError}</p>
+          )}
           <motion.form
             initial={{ opacity: 0, scale: 0.95, y: 30 }}
             animate={{
@@ -159,8 +201,11 @@ const SignUp = () => {
                 />
                 <p className="text-[14px] text-[red]">{errors.password}</p>
               </div>
-              <button className="h-[50px] w-full bg-[#fc6e20] rounded-[10px] text-[20px] font-semibold text-white">
-                Sign Up
+              <button
+                onClick={onSignUp}
+                className="h-[50px] w-full bg-[#fc6e20] rounded-[10px] text-[20px] font-semibold text-white"
+              >
+                {loading ? "Loading..." : "Sign Up"}
               </button>
             </div>
             <p className="px-[20px] mt-[10px]">
