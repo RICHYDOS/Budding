@@ -4,6 +4,7 @@ import _ from "lodash";
 import {Cart} from "../models/cart.js";
 import bcrypt from "bcrypt";
 import express from "express";
+import {emailSender} from "../services/email.js";
 const router = express.Router();
 
 router.post('/', async (req, res) => {
@@ -31,6 +32,8 @@ router.post('/', async (req, res) => {
         "email": user.email,
         "cart": cart._id
     }
+
+    emailSender(user.firstname, user.email);
 
     res.header('x-auth-token', token).status(200).send(output);
 

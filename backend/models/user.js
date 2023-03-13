@@ -28,11 +28,15 @@ export const userSchema = new mongoose.Schema({
         required: true,
         minLength: 8,
         maxLength: 255
+    },
+    cart: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Cart"
     }
 });
 
 userSchema.methods.generateAuthToken = function() {
-    const token = jwt.sign({_id: this._id, email: this.email, firstname: this.firstname}, config.get('jwtPrivateKey'));
+    const token = jwt.sign({_id: this._id, email: this.email, firstname: this.firstname, cart: this.cart}, process.env.jwtPrivateKey);
     return token;
 }
 
