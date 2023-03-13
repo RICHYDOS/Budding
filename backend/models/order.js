@@ -6,11 +6,6 @@ export const orderSchema = new mongoose.Schema({
         ref: "User",
         required: true
     },
-    date_created: {
-        type: Date,
-        required: true,
-        default: Date.now
-    },
     date_delivered: {
         type: Date,
     },
@@ -40,7 +35,7 @@ export const orderSchema = new mongoose.Schema({
         })],
         required: true
     }
-});
+}, {timestamps: true});
 
 export const Order = mongoose.model("Order", orderSchema);
 

@@ -6,11 +6,6 @@ export const cartSchema = new mongoose.Schema({
         ref: "User",
         required: true
     },
-    date_created: {
-        type: Date,
-        required: true,
-        default: Date.now
-    },
     products: {
         type: [new mongoose.Schema({
             product: {
@@ -29,7 +24,7 @@ export const cartSchema = new mongoose.Schema({
             }
         })]
     }
-});
+}, {timestamps: true});
 
 export const Cart = mongoose.model("Cart", cartSchema);
 

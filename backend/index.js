@@ -21,10 +21,11 @@ mongoose.connect(process.env.connectionString)
     .catch(err => console.error("Could not connect to MongoDb", err));
 
 app.use(express.json());
-app.use("/api/products", products);
-app.use("/api/carts", carts);
 app.use("/api/users", users);
 app.use("/api/login", login);
+app.use("/api/products", products);
+app.use("/api/carts", carts);
+
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on Port ${port}`));
